@@ -9,12 +9,12 @@ import (
 )
 
 type mp3Player struct {
-	playAbstract
+	basePlayer
 }
 
 func newMp3Player(filepath string) interfaces.MediaInterface {
 	instance := &mp3Player{
-		playAbstract: playAbstract{
+		basePlayer: basePlayer{
 			filepath: filepath,
 		},
 	}
