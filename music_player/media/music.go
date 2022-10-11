@@ -2,8 +2,8 @@ package media
 
 import (
 	"go_test/music_player/errors"
-	"go_test/music_player/media/interfaces"
-	"go_test/music_player/media/types"
+	"go_test/music_player/interfaces"
+	"go_test/music_player/types"
 	"path/filepath"
 )
 

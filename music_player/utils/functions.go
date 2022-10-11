@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"go_test/music_player/media/types"
+	"go_test/music_player/types"
 	"io/fs"
 	"os"
 	"path/filepath"

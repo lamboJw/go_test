@@ -3,7 +3,7 @@ package media
 import (
 	"encoding/binary"
 	"go_test/music_player/errors"
-	"go_test/music_player/media/types"
+	"go_test/music_player/types"
 	"go_test/music_player/utils"
 	"golang.org/x/text/encoding/unicode"
 	"os"

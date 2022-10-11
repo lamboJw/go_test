@@ -1,8 +1,8 @@
 package lib
 
 import (
+	"go_test/music_player/interfaces"
 	"go_test/music_player/media"
-	"go_test/music_player/media/interfaces"
 )
 
 type MusicList []interfaces.InfoGetter

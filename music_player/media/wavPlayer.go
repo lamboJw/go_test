@@ -3,7 +3,7 @@ package media
 import (
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/wav"
-	"go_test/music_player/media/interfaces"
+	"go_test/music_player/interfaces"
 )
 
 type wavPlayer struct {
