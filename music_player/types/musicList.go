@@ -1,13 +1,12 @@
-package lib
+package types
 
 import (
 	"go_test/music_player/interfaces"
-	"go_test/music_player/media"
 )
 
-type MusicList []interfaces.InfoGetter
+type MusicList []interfaces.MediaInfoGetter
 
-func NewMusicList(m map[string]*media.Music) MusicList {
+func NewMusicList(m map[string]interfaces.MediaInfoGetterAndPlayer) MusicList {
 	ms := make(MusicList, 0, len(m))
 	for _, v := range m {
 		ms = append(ms, v)

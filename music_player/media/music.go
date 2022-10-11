@@ -8,7 +8,7 @@ import (
 )
 
 type Music struct {
-	Player interfaces.MediaInterface
+	player interfaces.MediaInterface
 }
 
 func NewMusic(path string) (*Music, error) {
@@ -25,7 +25,7 @@ func NewMusic(path string) (*Music, error) {
 		err = errors.NewMusicTypeError(ext)
 		return nil, err
 	}
-	m := &Music{Player: p}
+	m := &Music{player: p}
 	err = m.init()
 	if err != nil {
 		return nil, err
@@ -34,68 +34,73 @@ func NewMusic(path string) (*Music, error) {
 	return m, nil
 }
 
-func (m *Music) Name() string {
-	return m.Player.Name()
-}
-
-func (m *Music) Size() int64 {
-	return m.Player.Size()
-}
-
-func (m *Music) Id() string {
-	return m.Player.Id()
-}
-
-func (m *Music) Title() string {
-	return m.Player.Title()
-}
-
-func (m *Music) Artist() string {
-	return m.Player.Artist()
-}
-
-func (m *Music) Album() string {
-	return m.Player.Album()
-}
-
-func (m *Music) Year() string {
-	return m.Player.Year()
-}
-
-func (m *Music) Genre() string {
-	return m.Player.Genre()
-}
-
-func (m *Music) Sort() int64 {
-	return m.Player.Sort()
-}
-
-func (m *Music) Index() int64 {
-	return m.Player.Index()
-}
-
 func (m *Music) init() error {
 	var err error
-	_, err = m.Player.Fp()
+	_, err = m.player.Fp()
 	if err != nil {
 		return err
 	}
-	defer m.Player.CloseFp()
-	err = m.Player.InitMediaInfo()
+	defer m.player.CloseFp()
+	err = m.player.InitMediaInfo()
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
+func (m *Music) Name() string {
+	return m.player.Name()
+}
+
+func (m *Music) Size() int64 {
+	return m.player.Size()
+}
+
+func (m *Music) Id() string {
+	return m.player.Id()
+}
+
+func (m *Music) Title() string {
+	return m.player.Title()
+}
+
+func (m *Music) Artist() string {
+	return m.player.Artist()
+}
+
+func (m *Music) Album() string {
+	return m.player.Album()
+}
+
+func (m *Music) Year() string {
+	return m.player.Year()
+}
+
+func (m *Music) Genre() string {
+	return m.player.Genre()
+}
+
+func (m *Music) Sort() int64 {
+	return m.player.Sort()
+}
+
+func (m *Music) Index() int64 {
+	return m.player.Index()
+}
+
 func (m *Music) Play() error {
 	var err error
-	_, err = m.Player.Streamer()
+	_, err = m.player.Fp()
 	if err != nil {
 		return err
 	}
-	defer m.Player.CloseStreamer()
-	err = m.Player.Play()
+	defer m.player.CloseFp()
+	_, err = m.player.Streamer()
+	if err != nil {
+		return err
+	}
+	defer m.player.CloseStreamer()
+	err = m.player.Play()
 	if err != nil {
 		return err
 	}
@@ -104,7 +109,7 @@ func (m *Music) Play() error {
 
 func (m *Music) Pause() error {
 	var err error
-	err = m.Player.Pause()
+	err = m.player.Pause()
 	if err != nil {
 		return err
 	}

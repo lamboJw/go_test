@@ -12,4 +12,8 @@ func main() {
 	}
 	list := manager.GetList("", 0, 20)
 	manager.PrintList(list)
+	err = manager.Play(list[0].Id(), list[0].Name())
+	if err != nil {
+		fmt.Println(err)
+	}
 }

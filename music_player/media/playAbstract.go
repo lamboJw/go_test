@@ -104,7 +104,7 @@ func (p *playAbstract) CloseStreamer() {
 	p.streamer = nil
 }
 
-func (p *playAbstract) firstPlay() error {
+func (p *playAbstract) initSpeaker() error {
 	err := speaker.Init(p.format.SampleRate, p.format.SampleRate.N(time.Second/10))
 	if err != nil {
 		fmt.Println("初始化扬声器失败：", err)
@@ -115,14 +115,15 @@ func (p *playAbstract) firstPlay() error {
 
 func (p *playAbstract) Play() error {
 	var err error
-	if p.position == 0 {
-		err = p.firstPlay()
-	} else {
+	if p.position != 0 {
 		err = p.resume()
 	}
+	err = p.initSpeaker()
 	if err != nil {
 		return nil
 	}
+	defer speaker.Clear()
+	fmt.Println("正在播放：", p.title)
 	p.doPlay(p.streamer)
 	return nil
 }
@@ -147,6 +148,5 @@ func (p *playAbstract) resume() error {
 	if err != nil {
 		return err
 	}
-	p.doPlay(p.streamer)
 	return nil
 }
