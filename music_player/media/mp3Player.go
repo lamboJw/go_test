@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/mp3"
+	"go_test/music_player/media/interfaces"
 )
 
 type mp3Player struct {
 	playAbstract
 }
 
-func newMp3Player(filepath string) mediaInterface {
+func newMp3Player(filepath string) interfaces.MediaInterface {
 	instance := &mp3Player{
 		playAbstract: playAbstract{
 			filepath: filepath,
@@ -20,7 +21,7 @@ func newMp3Player(filepath string) mediaInterface {
 	return instance
 }
 
-func (f *mp3Player) initStreamer() error {
+func (f *mp3Player) InitStreamer() error {
 	streamer, format, err := mp3.Decode(f.fp)
 	if err != nil {
 		return err
@@ -34,14 +35,14 @@ func (f *mp3Player) Streamer() (beep.StreamSeekCloser, error) {
 	if f.streamer != nil {
 		return f.streamer, nil
 	}
-	err := f.initStreamer()
+	err := f.InitStreamer()
 	if err != nil {
 		return nil, err
 	}
 	return f.streamer, nil
 }
 
-func (f *mp3Player) initMediaInfo() error {
+func (f *mp3Player) InitMediaInfo() error {
 	fInfo, _ := f.fp.Stat()
 	f.sort = fInfo.ModTime().Unix()
 	f.name = fInfo.Name()

@@ -10,6 +10,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	list := manager.GetList("同", 0, 3)
+	list := manager.GetList("", 0, 20)
 	manager.PrintList(list)
 }

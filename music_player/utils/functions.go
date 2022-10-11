@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"go_test/music_player/media/types"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -13,8 +14,8 @@ func SearchFiles(dir string) ([]string, error) {
 	fsys := os.DirFS(dir)
 	err := fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
 		ext := filepath.Ext(path)
-		typeNum := ExtToMusicType(ext)
-		if path != "." && typeNum != Unknown {
+		typeNum := types.ExtToMusicType(ext)
+		if path != "." && typeNum != types.Unknown {
 			files = append(files, path)
 		}
 		return nil

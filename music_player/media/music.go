@@ -2,12 +2,36 @@ package media
 
 import (
 	"go_test/music_player/errors"
-	"go_test/music_player/utils"
+	"go_test/music_player/media/interfaces"
+	"go_test/music_player/media/types"
 	"path/filepath"
 )
 
 type Music struct {
-	Player mediaInterface
+	Player interfaces.MediaInterface
+}
+
+func NewMusic(path string) (*Music, error) {
+	ext := filepath.Ext(path)
+	var p interfaces.MediaInterface
+	var err error
+	typeNum := types.ExtToMusicType(ext)
+	switch typeNum {
+	case types.Mp3:
+		p = newMp3Player(path)
+	case types.Wav:
+		p = newWavPlayer(path)
+	default:
+		err = errors.NewMusicTypeError(ext)
+		return nil, err
+	}
+	m := &Music{Player: p}
+	err = m.init()
+	if err != nil {
+		return nil, err
+	}
+	//fmt.Printf("player: %+v\n", p)
+	return m, nil
 }
 
 func (m *Music) Name() string {
@@ -50,29 +74,6 @@ func (m *Music) Index() int64 {
 	return m.Player.Index()
 }
 
-func NewMusic(path string) (*Music, error) {
-	ext := filepath.Ext(path)
-	var p mediaInterface
-	var err error
-	typeNum := utils.ExtToMusicType(ext)
-	switch typeNum {
-	case utils.Mp3:
-		p = newMp3Player(path)
-	case utils.Wav:
-		p = newWavPlayer(path)
-	default:
-		err = errors.NewMusicTypeError(ext)
-		return nil, err
-	}
-	m := &Music{Player: p}
-	err = m.init()
-	if err != nil {
-		return nil, err
-	}
-	//fmt.Printf("player: %+v\n", p)
-	return m, nil
-}
-
 func (m *Music) init() error {
 	var err error
 	_, err = m.Player.Fp()
@@ -80,7 +81,7 @@ func (m *Music) init() error {
 		return err
 	}
 	defer m.Player.CloseFp()
-	err = m.Player.initMediaInfo()
+	err = m.Player.InitMediaInfo()
 	if err != nil {
 		return err
 	}

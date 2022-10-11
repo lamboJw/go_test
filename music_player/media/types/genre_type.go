@@ -1,4 +1,4 @@
-package media
+package types
 
 type Genre uint8
 

@@ -1,11 +1,11 @@
-package media
+package interfaces
 
 import (
 	"github.com/faiface/beep"
 	"os"
 )
 
-type MediaInfoGetter interface {
+type InfoGetter interface {
 	Name() string
 	Size() int64
 	Id() string
@@ -18,11 +18,11 @@ type MediaInfoGetter interface {
 	Index() int64
 }
 
-type mediaInfoSetter interface {
+type InfoSetter interface {
 	SetIndex(index int64)
 }
 
-type mediaFileGetSetter interface {
+type FileGetSetter interface {
 	Fp() (*os.File, error)
 	CloseFp()
 	Streamer() (beep.StreamSeekCloser, error)

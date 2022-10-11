@@ -1,8 +1,11 @@
 package lib
 
-import "go_test/music_player/media"
+import (
+	"go_test/music_player/media"
+	"go_test/music_player/media/interfaces"
+)
 
-type MusicList []media.MediaInfoGetter
+type MusicList []interfaces.InfoGetter
 
 func NewMusicList(m map[string]*media.Music) MusicList {
 	ms := make(MusicList, 0, len(m))

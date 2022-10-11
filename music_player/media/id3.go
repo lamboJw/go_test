@@ -3,6 +3,7 @@ package media
 import (
 	"encoding/binary"
 	"go_test/music_player/errors"
+	"go_test/music_player/media/types"
 	"go_test/music_player/utils"
 	"golang.org/x/text/encoding/unicode"
 	"os"
@@ -40,7 +41,7 @@ type ID3V1 struct {
 	artist string
 	album  string
 	year   string
-	genre  Genre
+	genre  types.Genre
 }
 
 func (i *ID3V1) Title() string {
@@ -78,7 +79,7 @@ func (i *ID3V1) getTag(fp *os.File) error {
 	i.album = strings.Trim(string(id3[33:63]), "\x00")
 	i.artist = strings.Trim(string(id3[63:93]), "\x00")
 	i.year = string(id3[93:97])
-	i.genre = Genre(id3[127])
+	i.genre = types.Genre(id3[127])
 	return nil
 }
 
