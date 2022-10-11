@@ -8,14 +8,15 @@ import (
 	"math"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 )
 
 type Manager struct {
 	baseDir         string
 	musicList       map[string]*media.Music
-	sortedMusicList MusicListSorter
-	playingMusic    media.Music
+	sortedMusicList MusicList
+	playingMusic    *media.Music
 }
 
 func NewManager(dir string) (*Manager, error) {
@@ -32,35 +33,39 @@ func NewManager(dir string) (*Manager, error) {
 		}
 		musicList[music.Player.Id()] = music
 	}
-	sortedMusicList := NewMusicListSorter(musicList)
+	sortedMusicList := NewMusicList(musicList)
 	sort.Sort(sortedMusicList)
 	return &Manager{baseDir: dir, musicList: musicList, sortedMusicList: sortedMusicList}, nil
 }
 
-func (m *Manager) GetList(page int, pagesize int) []*media.Music {
+func (m *Manager) GetList(name string, page int, pagesize int) MusicList {
 	page = int(math.Max(float64(page), 1))
 	offset := (page - 1) * pagesize
 	end := offset + pagesize
-	fmt.Println(offset, end, len(m.sortedMusicList))
-	if end >= len(m.sortedMusicList) {
-		return m.sortedMusicList[offset:]
-	}
-	return m.sortedMusicList[offset:end]
-}
-
-func (m *Manager) Search(name string, page int, pagesize int) []*media.Music {
-	offset := (page - 1) * pagesize
-	end := offset + pagesize
-	if end >= len(m.sortedMusicList) {
-		end = -1
-	}
-	var list []*media.Music
-	for _, item := range m.sortedMusicList {
-		if strings.Contains(item.Player.Name(), name) {
-			list = append(list, item)
+	var list MusicList
+	if name != "" {
+		for _, item := range m.sortedMusicList {
+			if strings.Contains(item.Name(), name) {
+				list = append(list, item)
+			}
 		}
+	} else {
+		list = m.sortedMusicList
+	}
+	if end >= len(list) {
+		return list[offset:]
 	}
 	return list[offset:end]
+}
+
+func (m *Manager) PrintList(list MusicList) {
+	for k, v := range list {
+		titleWidth := 20 - utils.ChineseCount(v.Title())
+		artistWidth := 20 - utils.ChineseCount(v.Artist())
+		albumWidth := 20 - utils.ChineseCount(v.Album())
+		format := "%-5d%-" + strconv.Itoa(titleWidth) + "s%-" + strconv.Itoa(artistWidth) + "s%-" + strconv.Itoa(albumWidth) + "s\n"
+		fmt.Printf(format, k+1, v.Title(), v.Artist(), v.Album())
+	}
 }
 
 func (m *Manager) Play(id string, filename string) error {

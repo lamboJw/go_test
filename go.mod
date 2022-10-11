@@ -2,7 +2,10 @@ module go_test
 
 go 1.18
 
-require github.com/faiface/beep v1.1.0
+require (
+	github.com/faiface/beep v1.1.0
+	golang.org/x/text v0.3.0
+)
 
 require (
 	github.com/hajimehoshi/go-mp3 v0.3.0 // indirect

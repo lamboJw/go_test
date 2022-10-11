@@ -10,7 +10,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	for k, v := range manager.GetList(0, 3) {
-		fmt.Printf("path: %d, info：%+v\n", k, v.Player)
-	}
+	list := manager.GetList("同", 0, 3)
+	manager.PrintList(list)
 }

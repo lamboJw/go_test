@@ -2,5 +2,13 @@ package media
 
 type mediaInterface interface {
 	player
-	mediaInfoGetter
+	MediaInfoGetter
+	mediaInfoSetter
+	mediaFileGetSetter
+	mediaIniter
+}
+
+type MediaPlayerInterface interface {
+	player
+	MediaInfoGetter
 }

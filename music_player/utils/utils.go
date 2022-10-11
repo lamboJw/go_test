@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"unicode"
 )
 
 func SearchFiles(dir string) ([]string, error) {
@@ -35,4 +36,29 @@ func TrimByteSlice(s []byte) []byte {
 	}
 	fmt.Println(s, index, s[:index])
 	return s[:index]
+}
+
+func GetOffsetBit(b byte, offset uint8) uint8 {
+	d := (b << (8 - offset)) >> 7
+	return d
+}
+
+func SetOffsetBit(b byte, offset uint8, setNum uint8) byte {
+	var d byte
+	var one byte = 1
+	if setNum == 1 {
+		d = b | (one << (offset - 1))
+	} else {
+		d = b & ^(one << (offset - 1))
+	}
+	return d
+}
+
+func ChineseCount(str1 string) (count int) {
+	for _, char := range str1 {
+		if unicode.Is(unicode.Han, char) {
+			count++
+		}
+	}
+	return
 }

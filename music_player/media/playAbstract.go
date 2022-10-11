@@ -10,24 +10,32 @@ import (
 )
 
 type playAbstract struct {
-	mediaIniter
 	//文件属性
 	name string
 	size int64
 	//多媒体属性
-	id       string
-	title    string
-	album    string
-	artist   string
-	year     string
-	comment  string
-	genre    uint8
+	id     string
+	title  string
+	album  string
+	artist string
+	year   string
+	genre  string
+	//播放器属性
 	sort     int64
+	index    int64
 	filepath string
 	fp       *os.File
 	streamer beep.StreamSeekCloser
 	format   beep.Format
 	position int
+}
+
+func (p *playAbstract) SetIndex(index int64) {
+	p.index = index
+}
+
+func (p *playAbstract) Index() int64 {
+	return p.index
 }
 
 func (p *playAbstract) Name() string {
@@ -58,11 +66,7 @@ func (p *playAbstract) Year() string {
 	return p.year
 }
 
-func (p *playAbstract) Comment() string {
-	return p.comment
-}
-
-func (p *playAbstract) Genre() uint8 {
+func (p *playAbstract) Genre() string {
 	return p.genre
 }
 
@@ -70,13 +74,34 @@ func (p *playAbstract) Sort() int64 {
 	return p.sort
 }
 
-func (p *playAbstract) open() error {
+func (p *playAbstract) Fp() (*os.File, error) {
+	if p.fp != nil {
+		return p.fp, nil
+	}
 	file, err := os.Open(p.filepath)
 	if err != nil {
-		return errors.NewMusicNotExistError(p.name)
+		return nil, errors.NewMusicNotExistError(p.name)
 	}
 	p.fp = file
-	return nil
+	return p.fp, nil
+}
+
+func (p *playAbstract) CloseFp() {
+	err := p.fp.Close()
+	if err != nil {
+		fmt.Println("关闭文件", p.name, "失败：", err)
+		return
+	}
+	p.fp = nil
+}
+
+func (p *playAbstract) CloseStreamer() {
+	err := p.streamer.Close()
+	if err != nil {
+		fmt.Println("关闭流媒体失败：", err)
+		return
+	}
+	p.streamer = nil
 }
 
 func (p *playAbstract) firstPlay() error {
@@ -88,23 +113,17 @@ func (p *playAbstract) firstPlay() error {
 	return nil
 }
 
-func (p *playAbstract) init() error {
+func (p *playAbstract) Play() error {
 	var err error
-	err = p.open()
-	if err != nil {
-		return err
+	if p.position == 0 {
+		err = p.firstPlay()
+	} else {
+		err = p.resume()
 	}
-	err = p.initMediaInfo()
 	if err != nil {
-		return err
+		return nil
 	}
-	defer func() {
-		err := p.fp.Close()
-		if err != nil {
-			fmt.Println("关闭文件", p.name, "失败：", err)
-			return
-		}
-	}()
+	p.doPlay(p.streamer)
 	return nil
 }
 
@@ -117,12 +136,17 @@ func (p *playAbstract) doPlay(streamer beep.StreamSeekCloser) {
 }
 
 func (p *playAbstract) Pause() error {
-	//TODO 记录当前position，然后speaker.Clear()
 	p.position = p.streamer.Position()
+	speaker.Clear()
+	p.CloseStreamer()
 	return nil
 }
 
 func (p *playAbstract) resume() error {
-	//TODO 根据当前position，streamer.Seek(position)，然后p.doPlay(新streamer)
+	err := p.streamer.Seek(p.position)
+	if err != nil {
+		return err
+	}
+	p.doPlay(p.streamer)
 	return nil
 }
