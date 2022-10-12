@@ -7,6 +7,22 @@ import (
 	"path/filepath"
 )
 
+var mediaTypeMap = make(map[string]mediaCreator)
+
+type mediaCreator func(path string) interfaces.MediaInterface
+
+func mediaRegister(typeStr string, factory mediaCreator) {
+	mediaTypeMap[typeStr] = factory
+}
+
+func createMedia(typeStr string, path string) (interfaces.MediaInterface, error) {
+	if factory, ok := mediaTypeMap[typeStr]; ok {
+		return factory(path), nil
+	} else {
+		return nil, errors.NewMusicTypeError(typeStr)
+	}
+}
+
 type Music struct {
 	player interfaces.MediaInterface
 }
@@ -15,14 +31,8 @@ func NewMusic(path string) (*Music, error) {
 	ext := filepath.Ext(path)
 	var p interfaces.MediaInterface
 	var err error
-	typeNum := types.ExtToMusicType(ext)
-	switch typeNum {
-	case types.Mp3:
-		p = newMp3Player(path)
-	case types.Wav:
-		p = newWavPlayer(path)
-	default:
-		err = errors.NewMusicTypeError(ext)
+	p, err = createMedia(types.ExtToMusicType(ext).String(), path)
+	if err != nil {
 		return nil, err
 	}
 	m := &Music{player: p}

@@ -6,10 +6,15 @@ import (
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/mp3"
 	"go_test/music_player/interfaces"
+	"go_test/music_player/types"
 )
 
 type mp3Player struct {
 	basePlayer
+}
+
+func init() {
+	mediaRegister(types.Mp3.String(), newMp3Player)
 }
 
 func newMp3Player(filepath string) interfaces.MediaInterface {

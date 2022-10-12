@@ -4,10 +4,15 @@ import (
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/wav"
 	"go_test/music_player/interfaces"
+	"go_test/music_player/types"
 )
 
 type wavPlayer struct {
 	basePlayer
+}
+
+func init() {
+	mediaRegister(types.Wav.String(), newWavPlayer)
 }
 
 func newWavPlayer(filepath string) interfaces.MediaInterface {
