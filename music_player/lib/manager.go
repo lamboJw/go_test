@@ -7,6 +7,7 @@ import (
 	"go_test/music_player/media"
 	"go_test/music_player/types"
 	"go_test/music_player/utils"
+	"log"
 	"math"
 	"path/filepath"
 	"sort"
@@ -27,13 +28,22 @@ func NewManager(dir string) (*Manager, error) {
 		return nil, err
 	}
 	musicList := make(map[string]interfaces.MediaInfoGetterAndPlayer)
+	channel := make(chan interfaces.MediaInfoGetterAndPlayer)
 	for _, path := range list {
-		music, err := media.NewMusic(filepath.Join(dir, path))
-		if err != nil {
-			fmt.Println("初始化", path, "失败：", err)
-			continue
+		go func(fpath string) {
+			music, err := media.NewMusic(fpath)
+			if err != nil {
+				log.Println("初始化", fpath, "失败：", err)
+				channel <- nil
+			}
+			channel <- music
+		}(filepath.Join(dir, path))
+	}
+	for i := 0; i < len(list); i++ {
+		music := <-channel
+		if music != nil {
+			musicList[music.Id()] = music
 		}
-		musicList[music.Id()] = music
 	}
 	sortedMusicList := types.NewMusicList(musicList)
 	sort.Sort(sortedMusicList)

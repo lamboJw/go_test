@@ -5,10 +5,6 @@ import (
 	"go_test/music_player/lib"
 )
 
-func init() {
-	fmt.Println("init")
-}
-
 func TestPlayer() {
 	manager, err := lib.NewManager("E:\\CloudMusic")
 	if err != nil {
