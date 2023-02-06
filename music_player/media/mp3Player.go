@@ -13,10 +13,16 @@ type mp3Player struct {
 	basePlayer
 }
 
+/*
+引入包的时候，会自动调用init方法
+*/
 func init() {
 	mediaRegister(types.Mp3.String(), newMp3Player)
 }
 
+/*
+实例化方法
+*/
 func newMp3Player(filepath string) interfaces.MediaInterface {
 	instance := &mp3Player{
 		basePlayer: basePlayer{

@@ -28,7 +28,7 @@ func NewManager(dir string) (*Manager, error) {
 		return nil, err
 	}
 	musicList := make(map[string]interfaces.MediaInfoGetterAndPlayer)
-	channel := make(chan interfaces.MediaInfoGetterAndPlayer)
+	channel := make(chan interfaces.MediaInfoGetterAndPlayer, len(list))
 	for _, path := range list {
 		go func(fpath string) {
 			music, err := media.NewMusic(fpath)

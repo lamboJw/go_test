@@ -11,10 +11,16 @@ var mediaTypeMap = make(map[string]mediaCreator)
 
 type mediaCreator func(path string) interfaces.MediaInterface
 
+/*
+注册工厂方法
+*/
 func mediaRegister(typeStr string, factory mediaCreator) {
 	mediaTypeMap[typeStr] = factory
 }
 
+/*
+根据类型调用对应的工厂方法
+*/
 func createMedia(typeStr string, path string) (interfaces.MediaInterface, error) {
 	if factory, ok := mediaTypeMap[typeStr]; ok {
 		return factory(path), nil
