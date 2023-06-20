@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <targets>
+      <target name="虚拟机" type="ssh/sftp" uuid="a2a517e3-ece8-4cde-8edd-e46c36d966b7">
+        <config>
+          <option name="projectRootOnTarget" value="/home/lambojw/go_test" />
+          <option name="serverName" value="虚拟机" />
+        </config>
+        <ContributedStateBase type="GoLanguageRuntime">
+          <config>
+            <option name="compiledExecutablesVolume">
+              <VolumeState>
+                <option name="remotePath" value="/var/www/html/go_test/out" />
+              </VolumeState>
+            </option>
+            <option name="goPath" value="/home/lambojw/go" />
+            <option name="goRoot" value="/usr/local/go/bin/go" />
+            <option name="goVersion" value="go1.19.3 linux/amd64" />
+            <option name="projectSourcesVolume">
+              <VolumeState>
+                <option name="remotePath" value="/var/www/html/go_test" />
+              </VolumeState>
+            </option>
+          </config>
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="74c249ca-d3db-4c2a-bb38-dc17a174ad28" name="虚拟机">
+        <fileTransfer rootFolder="/var/www/html/go_test" accessType="SFTP" host="192.168.138.128" port="22" sshConfigId="4ec78a6b-b8b2-482c-a799-eb1af74247de" sshConfig="虚拟机">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
