@@ -25,9 +25,10 @@ func NewSquareDiamonds(index int, widget lib.WidgetName) Diamonds {
 	}
 	return &SquareDiamonds{
 		BaseDiamonds: BaseDiamonds{
-			diamondArr: arr,
-			index:      index,
-			widget:     widget,
+			diamondsType: lib.SquareDiamonds,
+			diamondArr:   arr,
+			index:        index,
+			widget:       widget,
 		},
 	}
 }

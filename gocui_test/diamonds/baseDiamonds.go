@@ -5,11 +5,16 @@ import (
 )
 
 type BaseDiamonds struct {
-	diamondArr []*Diamond
-	x, y       int
-	index      int
-	widget     lib.WidgetName
-	switchType int
+	diamondsType lib.DiamondsName
+	diamondArr   []*Diamond
+	x, y         int
+	index        int
+	widget       lib.WidgetName
+	switchType   int
+}
+
+func (d BaseDiamonds) GetDiamondsType() lib.DiamondsName {
+	return d.diamondsType
 }
 
 func (d *BaseDiamonds) DrawDiamonds(pos [][2]int) error {

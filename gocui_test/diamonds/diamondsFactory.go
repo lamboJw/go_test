@@ -19,7 +19,7 @@ func creatorRegister(typeStr lib.DiamondsName, factory Creator) {
 	typeMap[typeStr] = factory
 }
 
-func initDiamonds(d Initializer) error {
+func initDiamonds(d Diamonds) error {
 	if d.GetWidgetName() != lib.NextWidgetName && d.GetWidgetName() != lib.MainWidgetName {
 		log.Panicln("组件名称错误")
 	}
@@ -43,7 +43,7 @@ func initDiamonds(d Initializer) error {
 }
 
 // Create 根据类型调用对应的工厂方法
-func Create(typeStr lib.DiamondsName, index int, widget lib.WidgetName) (Eventer, error) {
+func Create(typeStr lib.DiamondsName, index int, widget lib.WidgetName) (Diamonds, error) {
 	if factory, ok := typeMap[typeStr]; ok {
 		diamond := factory(index, widget)
 		if err := initDiamonds(diamond); err != nil {

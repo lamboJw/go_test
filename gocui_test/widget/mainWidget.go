@@ -15,7 +15,7 @@ import (
 type MainWidget struct {
 	BaseWidget
 	diamondsNum      int
-	curDiamonds      diamonds.Eventer
+	curDiamonds      diamonds.Diamonds
 	level            int
 	score            int
 	existsDiamond    map[int]map[int]*diamonds.Diamond
@@ -66,6 +66,10 @@ func (w *MainWidget) Layout(g *gocui.Gui) error {
 			return err
 		}
 	}
+	w.left, w.right, w.top, w.bottom, w.midX, w.midY, err = lib.GetViewPos(w.name)
+	if err != nil {
+		log.Panicln(err)
+	}
 	return nil
 }
 
@@ -78,7 +82,7 @@ func (w *MainWidget) AddFixedDiamond() {
 	w.curDiamonds = nil
 }
 
-func (w *MainWidget) SetCurDiamonds(d diamonds.Eventer) {
+func (w *MainWidget) SetCurDiamonds(d diamonds.Diamonds) {
 	w.curDiamonds = d
 	w.startEvent()
 }
@@ -234,15 +238,14 @@ func (w *MainWidget) InitWidgetLimitPos() error {
 			}
 		}
 	}
+	w.diamondsNum = 0
 	w.existsDiamond = w.getInitExistsDiamond()
 	w.drawExistsDiamond()
 	return nil
 }
 
-//var existsDiamondCount = 0
-
 func (w *MainWidget) drawExistsDiamond() {
-	//existsDiamondCount++
+	return
 	fp, _ := os.OpenFile("existsDiamond.txt", os.O_WRONLY|os.O_CREATE, 0644)
 	defer fp.Close()
 	for y := w.top - 5*lib.DiamondHeight; y < w.bottom; y += lib.DiamondHeight {
@@ -302,20 +305,24 @@ func (w *MainWidget) checkStop(direction lib.Direction) bool {
 }
 
 func (w *MainWidget) RandDiamonds() error {
-	randType := diamonds.GetRandomType()
-	var d, d1 diamonds.Eventer
+	nextDiamondsType := diamonds.GetRandomType()
+	var d, d1 diamonds.Diamonds
 	var err error
+	mainDiamondsType, err := next.GetNextDiamondsType()
+	if err == lib.ErrNextDiamondsEmpty {
+		mainDiamondsType = diamonds.GetRandomType()
+	}
 	if err = next.DestroyNextDiamonds(); err != nil {
 		return err
 	}
-	if d, err = diamonds.Create(randType, -1, lib.NextWidgetName); err != nil {
+	if d, err = diamonds.Create(nextDiamondsType, -1, lib.NextWidgetName); err != nil {
 		return err
 	}
 	if err = next.SetNextDiamonds(d); err != nil {
 		return err
 	}
 	w.diamondsNum++
-	if d1, err = diamonds.Create(randType, w.diamondsNum, lib.MainWidgetName); err != nil {
+	if d1, err = diamonds.Create(mainDiamondsType, w.diamondsNum, lib.MainWidgetName); err != nil {
 		return err
 	}
 	main.SetCurDiamonds(d1)
@@ -323,7 +330,7 @@ func (w *MainWidget) RandDiamonds() error {
 }
 
 func (w *MainWidget) eliminate() {
-	eliminateY := make(map[int]bool, w.w/lib.DiamondWidth)
+	eliminateY := make(map[int]bool)
 	eliminateYArr := make(sort.IntSlice, 0)
 	for y, xArray := range w.existsDiamond {
 		if y < w.top {

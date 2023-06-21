@@ -25,10 +25,11 @@ func NewLeftZDiamonds(index int, widget lib.WidgetName) Diamonds {
 	}
 	return &LeftZDiamonds{
 		BaseDiamonds: BaseDiamonds{
-			diamondArr: arr,
-			index:      index,
-			widget:     widget,
-			switchType: 1,
+			diamondsType: lib.LeftZDiamonds,
+			diamondArr:   arr,
+			index:        index,
+			widget:       widget,
+			switchType:   1,
 		},
 	}
 }

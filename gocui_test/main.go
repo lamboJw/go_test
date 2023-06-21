@@ -14,10 +14,6 @@ func Main() {
 	next := widget.GetNextWidget()
 	main := widget.GetMainWidget()
 	g.SetManager(help, next, main)
-	g.Update(func(gui *gocui.Gui) error {
-		setWidgetPos()
-		return nil
-	})
 	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
 		log.Panicln(err)
 	}
@@ -72,20 +68,4 @@ func Main() {
 
 func quit(g *gocui.Gui, v *gocui.View) error {
 	return gocui.ErrQuit
-}
-
-func setWidgetPos() {
-	var widgetArr = []widget.GetSetter{widget.GetMainWidget(), widget.GetNextWidget()}
-	for _, b := range widgetArr {
-		left, right, top, bottom, midX, midY, err := lib.GetViewPos(b.Name())
-		if err != nil {
-			log.Panicln(err)
-		}
-		b.SetLeft(left)
-		b.SetRight(right)
-		b.SetTop(top)
-		b.SetBottom(bottom)
-		b.SetMidY(midY)
-		b.SetMidX(midX)
-	}
 }

@@ -1,5 +1,7 @@
 package lib
 
+import "errors"
+
 type WidgetName string
 
 type DiamondsName string
@@ -18,7 +20,7 @@ const (
 	LeftZDiamonds  DiamondsName = "leftZ"
 )
 
-var DiamondsTypes = []DiamondsName{SquareDiamonds}
+var DiamondsTypes = []DiamondsName{SquareDiamonds, LeftZDiamonds}
 
 const Help = `Ctrl+C：Close program
 Enter：开始游戏
@@ -28,4 +30,8 @@ Enter：开始游戏
 const (
 	DiamondWidth  = 6
 	DiamondHeight = 3
+)
+
+var (
+	ErrNextDiamondsEmpty = errors.New("未设置下一个方块")
 )

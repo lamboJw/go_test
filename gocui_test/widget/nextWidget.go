@@ -9,7 +9,7 @@ import (
 
 type NextWidget struct {
 	BaseWidget
-	nextDiamonds diamonds.Eventer
+	nextDiamonds diamonds.Diamonds
 }
 
 func init() {
@@ -36,18 +36,29 @@ func NewNextWidget(name lib.WidgetName, x int, y int, args ...interface{}) Widge
 }
 
 func (w *NextWidget) Layout(g *gocui.Gui) error {
-	_, err := g.SetView(string(w.name), w.x, w.y, w.x+w.w, w.y+w.h)
+	_, err := g.SetView(string(w.name), w.x, w.y, w.x+w.w+1, w.y+w.h+1)
 	if err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
 	}
+	w.left, w.right, w.top, w.bottom, w.midX, w.midY, err = lib.GetViewPos(w.name)
+	if err != nil {
+		log.Panicln(err)
+	}
 	return nil
 }
 
-func (w *NextWidget) SetNextDiamonds(nextDiamonds diamonds.Eventer) error {
+func (w *NextWidget) SetNextDiamonds(nextDiamonds diamonds.Diamonds) error {
 	w.nextDiamonds = nextDiamonds
 	return nil
+}
+
+func (w *NextWidget) GetNextDiamondsType() (lib.DiamondsName, error) {
+	if w.nextDiamonds == nil {
+		return "", lib.ErrNextDiamondsEmpty
+	}
+	return w.nextDiamonds.GetDiamondsType(), nil
 }
 
 func (w *NextWidget) DestroyNextDiamonds() error {
