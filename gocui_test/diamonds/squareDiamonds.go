@@ -14,23 +14,21 @@ type SquareDiamonds struct {
 引入包的时候，会自动调用init方法
 */
 func init() {
-	creatorRegister(lib.SquareDiamonds, NewSquareDiamonds)
-}
-
-func NewSquareDiamonds(index int, widget lib.WidgetName) Diamonds {
-	var arr []*Diamond
-	indexStr := strconv.Itoa(index)
-	for _, i := range []string{"0", "1", "2", "3"} {
-		arr = append(arr, NewDiamond(indexStr+"_"+i, gocui.ColorCyan, widget))
-	}
-	return &SquareDiamonds{
-		BaseDiamonds: BaseDiamonds{
-			diamondsType: lib.SquareDiamonds,
-			diamondArr:   arr,
-			index:        index,
-			widget:       widget,
-		},
-	}
+	creatorRegister(lib.SquareDiamonds, func(index int, widget lib.WidgetName) Diamonds {
+		var arr []*Diamond
+		indexStr := strconv.Itoa(index)
+		for _, i := range []string{"0", "1", "2", "3"} {
+			arr = append(arr, NewDiamond(indexStr+"_"+i, gocui.ColorCyan, widget))
+		}
+		return &SquareDiamonds{
+			BaseDiamonds: BaseDiamonds{
+				diamondsType: lib.SquareDiamonds,
+				diamondArr:   arr,
+				index:        index,
+				widget:       widget,
+			},
+		}
+	})
 }
 
 func (d *SquareDiamonds) getNextWidgetPos() ([][2]int, error) {

@@ -18,9 +18,11 @@ const (
 	DirectionUp    Direction    = "up"
 	SquareDiamonds DiamondsName = "square"
 	LeftZDiamonds  DiamondsName = "leftZ"
+	RightZDiamonds DiamondsName = "rightZ"
+	LeftLDiamonds  DiamondsName = "rightL"
 )
 
-var DiamondsTypes = []DiamondsName{SquareDiamonds, LeftZDiamonds}
+var DiamondsTypes = []DiamondsName{LeftLDiamonds}
 
 const Help = `Ctrl+C：Close program
 Enter：开始游戏

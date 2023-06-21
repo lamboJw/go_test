@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-type LeftZDiamonds struct {
+type RightZDiamonds struct {
 	BaseDiamonds
 }
 
@@ -14,15 +14,15 @@ type LeftZDiamonds struct {
 引入包的时候，会自动调用init方法
 */
 func init() {
-	creatorRegister(lib.LeftZDiamonds, func(index int, widget lib.WidgetName) Diamonds {
+	creatorRegister(lib.RightZDiamonds, func(index int, widget lib.WidgetName) Diamonds {
 		var arr []*Diamond
 		indexStr := strconv.Itoa(index)
 		for _, i := range []string{"0", "1", "2", "3"} {
-			arr = append(arr, NewDiamond(indexStr+"_"+i, gocui.ColorMagenta, widget))
+			arr = append(arr, NewDiamond(indexStr+"_"+i, gocui.ColorYellow, widget))
 		}
-		return &LeftZDiamonds{
+		return &RightZDiamonds{
 			BaseDiamonds: BaseDiamonds{
-				diamondsType: lib.LeftZDiamonds,
+				diamondsType: lib.RightZDiamonds,
 				diamondArr:   arr,
 				index:        index,
 				widget:       widget,
@@ -32,43 +32,43 @@ func init() {
 	})
 }
 
-func (d *LeftZDiamonds) getNextWidgetPos() ([][2]int, error) {
+func (d *RightZDiamonds) getNextWidgetPos() ([][2]int, error) {
 	_, _, top, bottom, midX, _, err := lib.GetViewPos(lib.NextWidgetName)
 	if err != nil {
 		return nil, err
 	}
 	level2Y := (bottom-top)/2 + top
 	level1Y := level2Y - lib.DiamondHeight
-	return [][2]int{{midX - lib.DiamondWidth, level1Y}, {midX, level1Y}, {midX, level2Y}, {midX + lib.DiamondWidth, level2Y}}, nil
+	return [][2]int{{midX - lib.DiamondWidth, level2Y}, {midX, level2Y}, {midX, level1Y}, {midX + lib.DiamondWidth, level1Y}}, nil
 }
 
-func (d *LeftZDiamonds) getMainWidgetPos() ([][2]int, error) {
+func (d *RightZDiamonds) getMainWidgetPos() ([][2]int, error) {
 	_, _, top, _, midX, _, err := lib.GetViewPos(lib.MainWidgetName)
 	if err != nil {
 		return nil, err
 	}
 	level2Y := top - lib.DiamondHeight
 	level1Y := level2Y - lib.DiamondHeight
-	return [][2]int{{midX - lib.DiamondWidth, level1Y}, {midX, level1Y}, {midX, level2Y}, {midX + lib.DiamondWidth, level2Y}}, nil
+	return [][2]int{{midX - lib.DiamondWidth, level2Y}, {midX, level2Y}, {midX, level1Y}, {midX + lib.DiamondWidth, level1Y}}, nil
 }
 
-func (d *LeftZDiamonds) GetSwitchDirectionPos() ([][2]int, int) {
+func (d *RightZDiamonds) GetSwitchDirectionPos() ([][2]int, int) {
 	var diamondArr = d.getDiamondCurPos()
 	var switchType int
 	if d.switchType == 1 {
 		switchType = 2
-		diamondArr[0][1] += lib.DiamondHeight
+		diamondArr[0][1] -= lib.DiamondHeight * 2
 		diamondArr[1][0] -= lib.DiamondWidth
-		diamondArr[2][1] -= lib.DiamondHeight
+		diamondArr[1][1] -= lib.DiamondHeight
 		diamondArr[3][0] -= lib.DiamondWidth
-		diamondArr[3][1] -= lib.DiamondHeight * 2
+		diamondArr[3][1] += lib.DiamondHeight
 	} else {
 		switchType = 1
-		diamondArr[0][1] -= lib.DiamondHeight
+		diamondArr[0][1] += lib.DiamondHeight * 2
 		diamondArr[1][0] += lib.DiamondWidth
-		diamondArr[2][1] += lib.DiamondHeight
+		diamondArr[1][1] += lib.DiamondHeight
 		diamondArr[3][0] += lib.DiamondWidth
-		diamondArr[3][1] += lib.DiamondHeight * 2
+		diamondArr[3][1] -= lib.DiamondHeight
 	}
 	return diamondArr, switchType
 }
