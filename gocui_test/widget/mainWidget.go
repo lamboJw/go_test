@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"sort"
-	"strconv"
 	"sync"
 	"time"
 )
@@ -110,9 +109,12 @@ func (w *MainWidget) startEvent() {
 			case <-w.bottomChannel:
 				w.AddFixedDiamond()
 				w.eliminate()
-				if err := w.RandDiamonds(); err != nil {
-					return
-				}
+				g.Update(func(gui *gocui.Gui) error {
+					if err := w.RandDiamonds(); err != nil {
+						return err
+					}
+					return nil
+				})
 				return
 			case <-w.topChannel:
 				w.curDiamonds = nil
@@ -165,8 +167,24 @@ func (w *MainWidget) startEvent() {
 						})
 					case lib.DirectionUp:
 						g.Update(func(gui *gocui.Gui) error {
-							if err := w.curDiamonds.SwitchDirection(); err != nil {
-								return err
+							diamondArr, switchType := w.curDiamonds.GetSwitchDirectionPos()
+							canSwitch := true
+							for _, pos := range diamondArr {
+								xMap := w.existsDiamond[pos[1]]
+								diamond, ok := xMap[pos[0]]
+								if !ok {
+									canSwitch = false
+									break
+								}
+								if diamond != nil {
+									canSwitch = false
+									break
+								}
+							}
+							if canSwitch {
+								if err := w.curDiamonds.SwitchDirection(diamondArr, switchType); err != nil {
+									return err
+								}
 							}
 							return nil
 						})
@@ -197,7 +215,7 @@ func (w *MainWidget) ExistsCurDiamonds() bool {
 
 func (w *MainWidget) getInitExistsDiamond() map[int]map[int]*diamonds.Diamond {
 	existsDiamond := make(map[int]map[int]*diamonds.Diamond)
-	for y := w.top; y < w.bottom; y += lib.DiamondHeight {
+	for y := w.top - 5*lib.DiamondHeight; y < w.bottom; y += lib.DiamondHeight { // 上面加高5格，方便在方块刚生成时判断是否可以变换方向
 		existsDiamond[y] = make(map[int]*diamonds.Diamond)
 		for x := w.left; x < w.right; x += lib.DiamondWidth {
 			existsDiamond[y][x] = nil
@@ -221,13 +239,13 @@ func (w *MainWidget) InitWidgetLimitPos() error {
 	return nil
 }
 
-var existsDiamondCount = 0
+//var existsDiamondCount = 0
 
 func (w *MainWidget) drawExistsDiamond() {
-	existsDiamondCount++
-	fp, _ := os.OpenFile("existsDiamond"+strconv.Itoa(existsDiamondCount)+".txt", os.O_WRONLY|os.O_CREATE, 0644)
+	//existsDiamondCount++
+	fp, _ := os.OpenFile("existsDiamond.txt", os.O_WRONLY|os.O_CREATE, 0644)
 	defer fp.Close()
-	for y := w.top; y < w.bottom; y += lib.DiamondHeight {
+	for y := w.top - 5*lib.DiamondHeight; y < w.bottom; y += lib.DiamondHeight {
 		for x := w.left; x < w.right; x += lib.DiamondWidth {
 			if w.existsDiamond[y][x] != nil {
 				fp.WriteString("1 ")
@@ -236,6 +254,12 @@ func (w *MainWidget) drawExistsDiamond() {
 			}
 		}
 		fp.WriteString("\n")
+		if y == w.top {
+			for x := w.left; x < w.right; x += lib.DiamondWidth {
+				fp.WriteString("- ")
+			}
+			fp.WriteString("\n")
+		}
 	}
 }
 
@@ -260,7 +284,7 @@ func (w *MainWidget) checkStop(direction lib.Direction) bool {
 		}
 		if x < w.left || x > w.right-lib.DiamondWidth || y > w.bottom-lib.DiamondHeight {
 			result = true
-		} else if w.existsDiamond[y][x] != nil {
+		} else if y >= w.top && w.existsDiamond[y][x] != nil {
 			result = true
 		}
 	}
@@ -278,11 +302,12 @@ func (w *MainWidget) checkStop(direction lib.Direction) bool {
 }
 
 func (w *MainWidget) RandDiamonds() error {
-	next := GetNextWidget()
 	randType := diamonds.GetRandomType()
 	var d, d1 diamonds.Eventer
 	var err error
-	next.DestroyNextDiamonds()
+	if err = next.DestroyNextDiamonds(); err != nil {
+		return err
+	}
 	if d, err = diamonds.Create(randType, -1, lib.NextWidgetName); err != nil {
 		return err
 	}
@@ -299,8 +324,11 @@ func (w *MainWidget) RandDiamonds() error {
 
 func (w *MainWidget) eliminate() {
 	eliminateY := make(map[int]bool, w.w/lib.DiamondWidth)
-	eliminateYArr := make(sort.IntSlice, w.w/lib.DiamondWidth)
+	eliminateYArr := make(sort.IntSlice, 0)
 	for y, xArray := range w.existsDiamond {
+		if y < w.top {
+			continue
+		}
 		full := true
 		for _, diamond := range xArray {
 			if diamond == nil {
@@ -320,6 +348,9 @@ func (w *MainWidget) eliminate() {
 	lib.GetGui().Update(func(gui *gocui.Gui) error {
 		for index := len(eliminateYArr) - 1; index >= 0; index-- {
 			for y, xArray := range w.existsDiamond {
+				if y < w.top {
+					continue
+				}
 				if y == eliminateYArr[index] { // 删除行
 					for x, diamond := range xArray {
 						diamond.Destroy()
@@ -338,7 +369,10 @@ func (w *MainWidget) eliminate() {
 			}
 		}
 		newExistsDiamond := w.getInitExistsDiamond() // 生成新的矩阵
-		for _, xArray := range w.existsDiamond {
+		for y, xArray := range w.existsDiamond {
+			if y < w.top {
+				continue
+			}
 			for _, diamond := range xArray {
 				if diamond != nil {
 					pos := diamond.GetPos()
@@ -350,6 +384,7 @@ func (w *MainWidget) eliminate() {
 		w.drawExistsDiamond()
 		w.score += len(eliminateYArr)
 		w.level = w.score/10 + 1
+		log.Println(w.score, w.level)
 		return nil
 	})
 }

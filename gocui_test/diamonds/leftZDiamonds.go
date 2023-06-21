@@ -55,24 +55,23 @@ func (d *LeftZDiamonds) getMainWidgetPos() ([][2]int, error) {
 	return [][2]int{{x, level1Y}, {midX, level1Y}, {midX, level2Y}, {midX + lib.DiamondWidth, level2Y}}, nil
 }
 
-func (d *LeftZDiamonds) SwitchDirection() error {
+func (d *LeftZDiamonds) GetSwitchDirectionPos() ([][2]int, int) {
+	var diamondArr = d.getDiamondCurPos()
+	var switchType int
 	if d.switchType == 1 {
-		d.switchType = 2
-		d.diamondArr[0].y += lib.DiamondHeight
-		d.diamondArr[1].x -= lib.DiamondWidth
-		d.diamondArr[2].y -= lib.DiamondHeight
-		d.diamondArr[3].x -= lib.DiamondWidth
-		d.diamondArr[3].y -= lib.DiamondHeight * 2
+		switchType = 2
+		diamondArr[0][1] += lib.DiamondHeight
+		diamondArr[1][0] -= lib.DiamondWidth
+		diamondArr[2][1] -= lib.DiamondHeight
+		diamondArr[3][0] -= lib.DiamondWidth
+		diamondArr[3][1] -= lib.DiamondHeight * 2
 	} else {
-		d.switchType = 1
-		d.diamondArr[0].y -= lib.DiamondHeight
-		d.diamondArr[1].x += lib.DiamondWidth
-		d.diamondArr[2].y += lib.DiamondHeight
-		d.diamondArr[3].x += lib.DiamondWidth
-		d.diamondArr[3].y += lib.DiamondHeight * 2
+		switchType = 1
+		diamondArr[0][1] -= lib.DiamondHeight
+		diamondArr[1][0] += lib.DiamondWidth
+		diamondArr[2][1] += lib.DiamondHeight
+		diamondArr[3][0] += lib.DiamondWidth
+		diamondArr[3][1] += lib.DiamondHeight * 2
 	}
-	if err := d.RefreshDiamonds(); err != nil {
-		return err
-	}
-	return nil
+	return diamondArr, switchType
 }

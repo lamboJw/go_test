@@ -36,8 +36,7 @@ func initDiamonds(d Initializer) error {
 			return err
 		}
 	}
-	err = d.DrawDiamonds(pos)
-	if err != nil {
+	if err = d.DrawDiamonds(pos); err != nil {
 		return err
 	}
 	return nil

@@ -14,11 +14,16 @@ type Initializer interface {
 	DrawDiamonds(pos [][2]int) error
 }
 
+type Setter interface {
+	SetSwitchType()
+}
+
 type Eventer interface {
 	GetDiamondArr() []*Diamond
 	MoveDown() error
 	MoveLeft() error
 	MoveRight() error
-	SwitchDirection() error
-	DestroyView()
+	GetSwitchDirectionPos() ([][2]int, int)
+	SwitchDirection(diamondArr [][2]int, switchType int) error
+	DestroyView() error
 }

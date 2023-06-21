@@ -38,13 +38,14 @@ func (d *Diamond) Destroy() error {
 func (d *Diamond) setView() error {
 	g := lib.GetGui()
 	if d.widget == lib.MainWidgetName {
-		_, y0, _, _, err := g.ViewPosition(string(lib.MainWidgetName))
+		_, _, top, _, _, _, err := lib.GetViewPos(lib.MainWidgetName)
 		if err != nil && err != gocui.ErrUnknownView {
 			log.Println(d.name + "get main view position error")
 			return err
 		}
-		if d.y < y0 {
-			if err := d.Destroy(); err != nil {
+		if d.y < top {
+			if err = d.Destroy(); err != nil {
+				log.Println(d.name, "destroy less than top")
 				return err
 			}
 			return nil

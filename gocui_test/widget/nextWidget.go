@@ -50,10 +50,13 @@ func (w *NextWidget) SetNextDiamonds(nextDiamonds diamonds.Eventer) error {
 	return nil
 }
 
-func (w *NextWidget) DestroyNextDiamonds() {
+func (w *NextWidget) DestroyNextDiamonds() error {
 	if w.nextDiamonds == nil {
-		return
+		return nil
 	}
-	w.nextDiamonds.DestroyView()
+	if err := w.nextDiamonds.DestroyView(); err != nil {
+		return err
+	}
 	w.nextDiamonds = nil
+	return nil
 }

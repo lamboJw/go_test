@@ -1,7 +1,6 @@
 package diamonds
 
 import (
-	"github.com/lamboJw/gocui"
 	"go_test/gocui_test/lib"
 )
 
@@ -70,14 +69,31 @@ func (d *BaseDiamonds) GetWidgetName() lib.WidgetName {
 	return d.widget
 }
 
-func (d *BaseDiamonds) DestroyView() {
-	g := lib.GetGui()
-	g.Update(func(gui *gocui.Gui) error {
-		for _, diamond := range d.diamondArr {
-			if err := diamond.Destroy(); err != nil {
-				return err
-			}
+func (d *BaseDiamonds) DestroyView() error {
+	for _, diamond := range d.diamondArr {
+		if err := diamond.Destroy(); err != nil {
+			return err
 		}
-		return nil
-	})
+	}
+	return nil
+}
+
+func (d *BaseDiamonds) getDiamondCurPos() [][2]int {
+	var diamondArr = make([][2]int, len(d.diamondArr))
+	for k, diamond := range d.diamondArr {
+		diamondArr[k] = diamond.GetPos()
+	}
+	return diamondArr
+}
+
+func (d *BaseDiamonds) SwitchDirection(diamondArr [][2]int, switchType int) error {
+	d.switchType = switchType
+	for k, diamond := range diamondArr {
+		d.diamondArr[k].x = diamond[0]
+		d.diamondArr[k].y = diamond[1]
+	}
+	if err := d.RefreshDiamonds(); err != nil {
+		return err
+	}
+	return nil
 }

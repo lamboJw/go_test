@@ -55,6 +55,6 @@ func (d *SquareDiamonds) getMainWidgetPos() ([][2]int, error) {
 	return [][2]int{{x, level1Y}, {midX, level1Y}, {x, level2Y}, {midX, level2Y}}, nil
 }
 
-func (d *SquareDiamonds) SwitchDirection() error {
-	return nil
+func (d *SquareDiamonds) GetSwitchDirectionPos() ([][2]int, int) {
+	return d.getDiamondCurPos(), d.switchType
 }
