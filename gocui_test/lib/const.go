@@ -9,23 +9,28 @@ type DiamondsName string
 type Direction string
 
 const (
-	HelpWidgetName WidgetName   = "help"
-	NextWidgetName WidgetName   = "next"
-	MainWidgetName WidgetName   = "main"
-	DirectionLeft  Direction    = "left"
-	DirectionDown  Direction    = "down"
-	DirectionRight Direction    = "right"
-	DirectionUp    Direction    = "up"
-	SquareDiamonds DiamondsName = "square"
-	LeftZDiamonds  DiamondsName = "leftZ"
-	RightZDiamonds DiamondsName = "rightZ"
-	LeftLDiamonds  DiamondsName = "rightL"
+	HelpWidgetName  WidgetName   = "help"
+	NextWidgetName  WidgetName   = "next"
+	MainWidgetName  WidgetName   = "main"
+	ScoreWidgetName WidgetName   = "score"
+	DirectionLeft   Direction    = "left"
+	DirectionDown   Direction    = "down"
+	DirectionRight  Direction    = "right"
+	DirectionUp     Direction    = "up"
+	ODiamonds       DiamondsName = "O"
+	ZDiamonds       DiamondsName = "Z"
+	SDiamonds       DiamondsName = "S"
+	JDiamonds       DiamondsName = "J"
+	LDiamonds       DiamondsName = "L"
+	IDiamonds       DiamondsName = "I"
+	TDiamonds       DiamondsName = "T"
 )
 
-var DiamondsTypes = []DiamondsName{LeftLDiamonds}
+var DiamondsTypes = []DiamondsName{ODiamonds, ZDiamonds, SDiamonds, JDiamonds, LDiamonds, IDiamonds, TDiamonds}
 
-const Help = `Ctrl+C：Close program
+const Help = `Ctrl+C：关闭程序
 Enter：开始游戏
+ ↑ ：旋转方块
 ← →：控制方块左右移动
  ↓ ：控制方块快速下落`
 
