@@ -13,26 +13,24 @@ type NextWidget struct {
 }
 
 func init() {
-	creatorRegister(lib.NextWidgetName, NewNextWidget)
-}
-
-func NewNextWidget(name lib.WidgetName, x int, y int, args ...interface{}) Widget {
-	width := args[0].(int)
-	if width%lib.DiamondWidth != 0 {
-		log.Panicln("宽度不是方块宽度的整数倍")
-	}
-	w := args[0].(int) + 1
-	h := w / 2
-	return &NextWidget{
-		BaseWidget: BaseWidget{
-			name: name,
-			x:    x,
-			y:    y,
-			w:    w,
-			h:    h,
-		},
-		nextDiamonds: nil,
-	}
+	creatorRegister(lib.NextWidgetName, func(name lib.WidgetName, x int, y int, args ...interface{}) Widget {
+		width := args[0].(int)
+		if width%lib.DiamondWidth != 0 {
+			log.Panicln("宽度不是方块宽度的整数倍")
+		}
+		w := args[0].(int) + 1
+		h := w/2 + 1
+		return &NextWidget{
+			BaseWidget: BaseWidget{
+				name: name,
+				x:    x,
+				y:    y,
+				w:    w,
+				h:    h,
+			},
+			nextDiamonds: nil,
+		}
+	})
 }
 
 func (w *NextWidget) Layout(g *gocui.Gui) error {

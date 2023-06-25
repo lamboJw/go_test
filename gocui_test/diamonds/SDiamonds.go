@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-type RightZDiamonds struct {
+type SDiamonds struct {
 	BaseDiamonds
 }
 
@@ -14,15 +14,15 @@ type RightZDiamonds struct {
 引入包的时候，会自动调用init方法
 */
 func init() {
-	creatorRegister(lib.RightZDiamonds, func(index int, widget lib.WidgetName) Diamonds {
+	creatorRegister(lib.SDiamonds, func(index int, widget lib.WidgetName) Diamonds {
 		var arr []*Diamond
 		indexStr := strconv.Itoa(index)
 		for _, i := range []string{"0", "1", "2", "3"} {
-			arr = append(arr, NewDiamond(indexStr+"_"+i, gocui.ColorYellow, widget))
+			arr = append(arr, NewDiamond(indexStr+"_"+i, gocui.ColorGreen, widget))
 		}
-		return &RightZDiamonds{
+		return &SDiamonds{
 			BaseDiamonds: BaseDiamonds{
-				diamondsType: lib.RightZDiamonds,
+				diamondsType: lib.SDiamonds,
 				diamondArr:   arr,
 				index:        index,
 				widget:       widget,
@@ -32,7 +32,7 @@ func init() {
 	})
 }
 
-func (d *RightZDiamonds) getNextWidgetPos() ([][2]int, error) {
+func (d *SDiamonds) getNextWidgetPos() ([][2]int, error) {
 	_, _, top, bottom, midX, _, err := lib.GetViewPos(lib.NextWidgetName)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func (d *RightZDiamonds) getNextWidgetPos() ([][2]int, error) {
 	return [][2]int{{midX - lib.DiamondWidth, level2Y}, {midX, level2Y}, {midX, level1Y}, {midX + lib.DiamondWidth, level1Y}}, nil
 }
 
-func (d *RightZDiamonds) getMainWidgetPos() ([][2]int, error) {
+func (d *SDiamonds) getMainWidgetPos() ([][2]int, error) {
 	_, _, top, _, midX, _, err := lib.GetViewPos(lib.MainWidgetName)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (d *RightZDiamonds) getMainWidgetPos() ([][2]int, error) {
 	return [][2]int{{midX - lib.DiamondWidth, level2Y}, {midX, level2Y}, {midX, level1Y}, {midX + lib.DiamondWidth, level1Y}}, nil
 }
 
-func (d *RightZDiamonds) GetSwitchDirectionPos() ([][2]int, int) {
+func (d *SDiamonds) GetSwitchDirectionPos() ([][2]int, int) {
 	var diamondArr = d.getDiamondCurPos()
 	var switchType int
 	if d.switchType == 1 {

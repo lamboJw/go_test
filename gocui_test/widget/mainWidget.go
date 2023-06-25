@@ -27,36 +27,34 @@ type MainWidget struct {
 }
 
 func init() {
-	creatorRegister(lib.MainWidgetName, NewMainWidget)
-}
-
-func NewMainWidget(name lib.WidgetName, x int, y int, args ...interface{}) Widget {
-	w := args[0].(int)
-	h := args[1].(int)
-	if w%lib.DiamondWidth != 0 {
-		log.Panicln("宽度不是方块宽度的整数倍")
-	}
-	if h%lib.DiamondHeight != 0 {
-		log.Panicln("高度不是方块高度的整数倍")
-	}
-	d := &MainWidget{
-		BaseWidget: BaseWidget{
-			name: name,
-			x:    x,
-			y:    y,
-			w:    w + 1,
-			h:    h + 1,
-		},
-		diamondsNum:      0,
-		level:            1,
-		score:            0,
-		curDiamonds:      nil,
-		bottomChannel:    make(chan bool, 1),
-		topChannel:       make(chan bool, 1),
-		stopChannel:      make(chan bool, 1),
-		directionChannel: make(chan lib.Direction, 10),
-	}
-	return d
+	creatorRegister(lib.MainWidgetName, func(name lib.WidgetName, x int, y int, args ...interface{}) Widget {
+		w := args[0].(int)
+		h := args[1].(int)
+		if w%lib.DiamondWidth != 0 {
+			log.Panicln("宽度不是方块宽度的整数倍")
+		}
+		if h%lib.DiamondHeight != 0 {
+			log.Panicln("高度不是方块高度的整数倍")
+		}
+		d := &MainWidget{
+			BaseWidget: BaseWidget{
+				name: name,
+				x:    x,
+				y:    y,
+				w:    w + 1,
+				h:    h + 1,
+			},
+			diamondsNum:      0,
+			level:            1,
+			score:            0,
+			curDiamonds:      nil,
+			bottomChannel:    make(chan bool, 1),
+			topChannel:       make(chan bool, 1),
+			stopChannel:      make(chan bool, 1),
+			directionChannel: make(chan lib.Direction, 10),
+		}
+		return d
+	})
 }
 
 func (w *MainWidget) Layout(g *gocui.Gui) error {
@@ -114,6 +112,7 @@ func (w *MainWidget) startEvent() {
 				w.AddFixedDiamond()
 				w.eliminate()
 				g.Update(func(gui *gocui.Gui) error {
+					score.updateScore()
 					if err := w.RandDiamonds(); err != nil {
 						return err
 					}
@@ -391,7 +390,6 @@ func (w *MainWidget) eliminate() {
 		w.drawExistsDiamond()
 		w.score += len(eliminateYArr)
 		w.level = w.score/10 + 1
-		log.Println(w.score, w.level)
 		return nil
 	})
 }

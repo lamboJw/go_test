@@ -13,7 +13,8 @@ func Main() {
 	help := widget.GetHelpWidget()
 	next := widget.GetNextWidget()
 	main := widget.GetMainWidget()
-	g.SetManager(help, next, main)
+	score := widget.GetScoreWidget()
+	g.SetManager(help, next, main, score)
 	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
 		log.Panicln(err)
 	}

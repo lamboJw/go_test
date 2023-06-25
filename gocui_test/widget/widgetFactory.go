@@ -13,6 +13,7 @@ var typeMap = make(map[lib.WidgetName]Creator)
 var next *NextWidget
 var help *HelpWidget
 var main *MainWidget
+var score *ScoreWidget
 
 /*
 注册工厂方法
@@ -63,4 +64,15 @@ func GetHelpWidget() *HelpWidget {
 		help = _widget.(*HelpWidget)
 	}
 	return help
+}
+
+func GetScoreWidget() *ScoreWidget {
+	if score == nil {
+		_widget, err := Create(lib.ScoreWidgetName, 0, lib.DiamondHeight*5+3, 20)
+		if err != nil {
+			log.Panicln(err)
+		}
+		score = _widget.(*ScoreWidget)
+	}
+	return score
 }

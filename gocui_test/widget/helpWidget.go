@@ -19,32 +19,30 @@ type HelpWidget struct {
 }
 
 func init() {
-	creatorRegister(lib.HelpWidgetName, NewHelpWidget)
-}
+	creatorRegister(lib.HelpWidgetName, func(name lib.WidgetName, x, y int, args ...interface{}) Widget {
+		body := args[0].(string)
+		lines := strings.Split(body, "\n")
 
-func NewHelpWidget(name lib.WidgetName, x, y int, args ...interface{}) Widget {
-	body := args[0].(string)
-	lines := strings.Split(body, "\n")
+		w := 0
+		keyWidth, descWidth, splitBody := splitHelp(body)
+		w = keyWidth + descWidth + 2
+		h := len(lines) + 1
+		w = w + 1
 
-	w := 0
-	keyWidth, descWidth, splitBody := splitHelp(body)
-	w = keyWidth + descWidth + 2
-	h := len(lines) + 1
-	w = w + 1
-
-	return &HelpWidget{
-		BaseWidget: BaseWidget{
-			name: name,
-			x:    x,
-			y:    y,
-			w:    w,
-			h:    h,
-		},
-		body:      body,
-		splitBody: splitBody,
-		keyWidth:  keyWidth,
-		descWidth: descWidth,
-	}
+		return &HelpWidget{
+			BaseWidget: BaseWidget{
+				name: name,
+				x:    x,
+				y:    y,
+				w:    w,
+				h:    h,
+			},
+			body:      body,
+			splitBody: splitBody,
+			keyWidth:  keyWidth,
+			descWidth: descWidth,
+		}
+	})
 }
 
 func (w *HelpWidget) Layout(g *gocui.Gui) error {
