@@ -2,7 +2,9 @@ package lib
 
 import (
 	"github.com/lamboJw/gocui"
+	"github.com/mattn/go-runewidth"
 	"log"
+	"runtime"
 	"strings"
 )
 
@@ -25,6 +27,9 @@ func GetGui() *gocui.Gui {
 		g, err = gocui.NewGui(gocui.OutputNormal)
 		if err != nil {
 			log.Panicln(err)
+		}
+		if runtime.GOOS == "windows" && runewidth.IsEastAsian() {
+			g.ASCII = true
 		}
 	}
 	return g

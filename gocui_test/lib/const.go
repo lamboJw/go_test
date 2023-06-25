@@ -35,8 +35,8 @@ Enter：开始游戏
  ↓ ：控制方块快速下落`
 
 const (
-	DiamondWidth  = 6
-	DiamondHeight = 3
+	DiamondWidth  = 4
+	DiamondHeight = 2
 )
 
 var (

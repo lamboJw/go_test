@@ -41,8 +41,8 @@ func init() {
 				name: name,
 				x:    x,
 				y:    y,
-				w:    w + 1,
-				h:    h + 1,
+				w:    w,
+				h:    h,
 			},
 			diamondsNum:      0,
 			level:            1,
@@ -58,7 +58,7 @@ func init() {
 }
 
 func (w *MainWidget) Layout(g *gocui.Gui) error {
-	_, err := g.SetView(string(w.name), w.x, w.y, w.x+w.w+1, w.y+w.h+1)
+	_, err := g.SetView(string(w.name), w.x, w.y, w.x+w.w+2, w.y+w.h+2)
 	if err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
@@ -207,9 +207,11 @@ func (w *MainWidget) getSpeed() time.Duration {
 }
 
 func (w *MainWidget) CurDiamondsMove(direction lib.Direction) {
-	w.lock.Lock()
-	w.directionChannel <- direction
-	w.lock.Unlock()
+	if w.ExistsCurDiamonds() {
+		w.lock.Lock()
+		w.directionChannel <- direction
+		w.lock.Unlock()
+	}
 }
 
 func (w *MainWidget) ExistsCurDiamonds() bool {

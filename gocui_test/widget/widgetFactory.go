@@ -31,9 +31,14 @@ func Create(typeStr lib.WidgetName, x int, y int, args ...interface{}) (Widget, 
 	}
 }
 
+var nextWidgetWidth = 5
+var nextWidgetHeight = 5
+var mainWidgetWidth = 10
+var mainWidgetHeight = 15
+
 func GetMainWidget() *MainWidget {
 	if main == nil {
-		_widget, err := Create(lib.MainWidgetName, 35, 0, lib.DiamondWidth*20, lib.DiamondHeight*17)
+		_widget, err := Create(lib.MainWidgetName, lib.DiamondWidth*nextWidgetWidth+5, 0, lib.DiamondWidth*mainWidgetWidth, lib.DiamondHeight*mainWidgetHeight)
 		if err != nil {
 			log.Panicln(err)
 		}
@@ -44,7 +49,7 @@ func GetMainWidget() *MainWidget {
 
 func GetNextWidget() *NextWidget {
 	if next == nil {
-		_widget, err := Create(lib.NextWidgetName, 0, 0, lib.DiamondWidth*5)
+		_widget, err := Create(lib.NextWidgetName, 0, 0, lib.DiamondWidth*nextWidgetWidth)
 		if err != nil {
 			log.Panicln(err)
 		}
@@ -55,9 +60,7 @@ func GetNextWidget() *NextWidget {
 
 func GetHelpWidget() *HelpWidget {
 	if help == nil {
-		g1 := lib.GetGui()
-		maxX, _ := g1.Size()
-		_widget, err := Create(lib.HelpWidgetName, maxX-40, 0, lib.Help)
+		_widget, err := Create(lib.HelpWidgetName, lib.DiamondWidth*(mainWidgetWidth+nextWidgetWidth)+10, 0, lib.Help)
 		if err != nil {
 			log.Panicln(err)
 		}
@@ -68,7 +71,7 @@ func GetHelpWidget() *HelpWidget {
 
 func GetScoreWidget() *ScoreWidget {
 	if score == nil {
-		_widget, err := Create(lib.ScoreWidgetName, 0, lib.DiamondHeight*5+3, 20)
+		_widget, err := Create(lib.ScoreWidgetName, 0, lib.DiamondHeight*nextWidgetHeight+3, lib.DiamondWidth*nextWidgetWidth)
 		if err != nil {
 			log.Panicln(err)
 		}

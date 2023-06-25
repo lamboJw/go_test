@@ -22,14 +22,14 @@ func init() {
 				x:    x,
 				y:    y,
 				w:    w,
-				h:    3,
+				h:    2,
 			},
 		}
 	})
 }
 
 func (w *ScoreWidget) Layout(g *gocui.Gui) error {
-	_, err := g.SetView(string(w.name), w.x, w.y, w.x+w.w, w.y+w.h)
+	_, err := g.SetView(string(w.name), w.x, w.y, w.x+w.w+2, w.y+w.h+1)
 	if err != nil {
 		if err != gocui.ErrUnknownView {
 			return err

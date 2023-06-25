@@ -18,8 +18,8 @@ func init() {
 		if width%lib.DiamondWidth != 0 {
 			log.Panicln("宽度不是方块宽度的整数倍")
 		}
-		w := args[0].(int) + 1
-		h := w/2 + 1
+		w := args[0].(int)
+		h := w / 2
 		return &NextWidget{
 			BaseWidget: BaseWidget{
 				name: name,
@@ -34,7 +34,7 @@ func init() {
 }
 
 func (w *NextWidget) Layout(g *gocui.Gui) error {
-	_, err := g.SetView(string(w.name), w.x, w.y, w.x+w.w+1, w.y+w.h+1)
+	_, err := g.SetView(string(w.name), w.x, w.y, w.x+w.w+2, w.y+w.h+2)
 	if err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
