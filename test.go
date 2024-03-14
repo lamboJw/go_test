@@ -1,10 +1,12 @@
 package main
 
-import "go_test/gocui_test"
+import (
+	"go_test/music_player"
+)
 
 func main() {
-	//music_player.TestPlayer()
+	music_player.TestPlayer()
 	//reflect_test.Main()
 	//Test()
-	gocui_test.Main()
+	//gocui_test.Main()
 }

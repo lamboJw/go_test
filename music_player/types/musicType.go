@@ -10,6 +10,7 @@ const (
 	Unknown MusicType = iota
 	Mp3
 	Wav
+	Flac
 )
 
 func (t MusicType) String() string {
@@ -18,6 +19,8 @@ func (t MusicType) String() string {
 		return "Mp3"
 	case Wav:
 		return "Wav"
+	case Flac:
+		return "Flac"
 	default:
 		return "Unknown"
 	}
@@ -31,6 +34,8 @@ func ExtToMusicType(Ext string) MusicType {
 		return Mp3
 	case "wav":
 		return Wav
+	case "flac":
+		return Flac
 	default:
 		return Unknown
 	}

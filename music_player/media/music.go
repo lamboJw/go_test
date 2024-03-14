@@ -1,6 +1,7 @@
 package media
 
 import (
+	"fmt"
 	"go_test/music_player/errors"
 	"go_test/music_player/interfaces"
 	"go_test/music_player/types"
@@ -104,22 +105,31 @@ func (m *Music) Index() int64 {
 	return m.player.Index()
 }
 
+func (m *Music) Playing() bool {
+	return m.player.Playing()
+}
+
 func (m *Music) Play() error {
-	var err error
-	_, err = m.player.Fp()
-	if err != nil {
-		return err
-	}
-	defer m.player.CloseFp()
-	_, err = m.player.Streamer()
-	if err != nil {
-		return err
-	}
-	defer m.player.CloseStreamer()
-	err = m.player.Play()
-	if err != nil {
-		return err
-	}
+	go func() {
+		var err error
+		_, err = m.player.Fp()
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		defer m.player.CloseFp()
+		_, err = m.player.Streamer()
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		defer m.player.CloseStreamer()
+		err = m.player.Play()
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+	}()
 	return nil
 }
 

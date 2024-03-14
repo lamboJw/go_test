@@ -29,6 +29,7 @@ type MediaInfoGetter interface {
 	Genre() string
 	Sort() int64
 	Index() int64
+	Playing() bool
 }
 
 type MediaInfoSetter interface {

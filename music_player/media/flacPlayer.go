@@ -4,27 +4,21 @@ import (
 	"crypto/md5"
 	"fmt"
 	"github.com/faiface/beep"
-	"github.com/faiface/beep/mp3"
+	"github.com/faiface/beep/flac"
 	"go_test/music_player/interfaces"
 	"go_test/music_player/types"
 )
 
-type mp3Player struct {
+type flacPlayer struct {
 	*basePlayer
 }
 
-/*
-引入包的时候，会自动调用init方法
-*/
 func init() {
-	mediaRegister(types.Mp3.String(), newMp3Player)
+	mediaRegister(types.Flac.String(), newFlacPlayer)
 }
 
-/*
-实例化方法
-*/
-func newMp3Player(filepath string) interfaces.MediaInterface {
-	instance := &mp3Player{
+func newFlacPlayer(filepath string) interfaces.MediaInterface {
+	instance := &flacPlayer{
 		basePlayer: &basePlayer{
 			filepath: filepath,
 		},
@@ -32,8 +26,8 @@ func newMp3Player(filepath string) interfaces.MediaInterface {
 	return instance
 }
 
-func (f *mp3Player) InitStreamer() error {
-	streamer, format, err := mp3.Decode(f.fp)
+func (f *flacPlayer) InitStreamer() error {
+	streamer, format, err := flac.Decode(f.fp)
 	if err != nil {
 		return err
 	}
@@ -42,7 +36,7 @@ func (f *mp3Player) InitStreamer() error {
 	return nil
 }
 
-func (f *mp3Player) Streamer() (beep.StreamSeekCloser, error) {
+func (f *flacPlayer) Streamer() (beep.StreamSeekCloser, error) {
 	if f.streamer != nil {
 		return f.streamer, nil
 	}
@@ -53,20 +47,20 @@ func (f *mp3Player) Streamer() (beep.StreamSeekCloser, error) {
 	return f.streamer, nil
 }
 
-func (f *mp3Player) InitMediaInfo() error {
+func (f *flacPlayer) InitMediaInfo() error {
 	fInfo, _ := f.fp.Stat()
 	f.sort = fInfo.ModTime().Unix()
 	f.name = fInfo.Name()
 	f.size = fInfo.Size()
-	id3, err := newID3(f.fp)
+	metaData, err := newFlacMetaData(f.fp)
 	if err != nil {
 		return err
 	}
-	f.title = id3.Title()
-	f.artist = id3.Artist()
-	f.album = id3.Album()
-	f.year = id3.Album()
-	f.genre = id3.Genre()
+	f.title = metaData.Title()
+	f.artist = metaData.Artist()
+	f.album = metaData.Album()
+	f.year = metaData.Year()
+	f.genre = metaData.Genre()
 	f.id = fmt.Sprintf("%x", md5.Sum([]byte(f.title+f.artist+f.album+f.year+f.genre)))
 	return nil
 }

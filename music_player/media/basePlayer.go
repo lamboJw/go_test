@@ -28,6 +28,8 @@ type basePlayer struct {
 	streamer beep.StreamSeekCloser
 	format   beep.Format
 	position int
+	playing  bool
+	playChan chan bool
 }
 
 func (p *basePlayer) SetIndex(index int64) {
@@ -73,6 +75,9 @@ func (p *basePlayer) Genre() string {
 func (p *basePlayer) Sort() int64 {
 	return p.sort
 }
+func (p *basePlayer) Playing() bool {
+	return p.playing
+}
 
 func (p *basePlayer) Fp() (*os.File, error) {
 	if p.fp != nil {
@@ -87,15 +92,22 @@ func (p *basePlayer) Fp() (*os.File, error) {
 }
 
 func (p *basePlayer) CloseFp() {
+	if p.fp == nil {
+		return
+	}
 	err := p.fp.Close()
 	if err != nil {
 		fmt.Println("关闭文件", p.name, "失败：", err)
+		p.fp = nil
 		return
 	}
 	p.fp = nil
 }
 
 func (p *basePlayer) CloseStreamer() {
+	if p.streamer == nil {
+		return
+	}
 	err := p.streamer.Close()
 	if err != nil {
 		fmt.Println("关闭流媒体失败：", err)
@@ -129,17 +141,21 @@ func (p *basePlayer) Play() error {
 }
 
 func (p *basePlayer) doPlay(streamer beep.StreamSeekCloser) {
-	done := make(chan bool)
+	if p.playChan == nil {
+		p.playChan = make(chan bool)
+	}
+	p.playing = true
 	speaker.Play(beep.Seq(streamer, beep.Callback(func() {
-		done <- true
+		p.playing = false
+		p.playChan <- true
 	})))
-	<-done
+	<-p.playChan
 }
 
 func (p *basePlayer) Pause() error {
 	p.position = p.streamer.Position()
-	speaker.Clear()
-	p.CloseStreamer()
+	p.playing = false
+	p.playChan <- true
 	return nil
 }
 

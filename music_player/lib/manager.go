@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"bufio"
 	"fmt"
 	"go_test/music_player/errors"
 	"go_test/music_player/interfaces"
@@ -9,6 +10,7 @@ import (
 	"go_test/music_player/utils"
 	"log"
 	"math"
+	"os"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -19,7 +21,9 @@ type Manager struct {
 	baseDir         string
 	musicList       map[string]interfaces.MediaInfoGetterAndPlayer
 	sortedMusicList types.MusicList
-	playingMusic    *media.Music
+	playingMusic    interfaces.MediaInfoGetterAndPlayer
+	inputChan       chan string
+	runChan         chan bool
 }
 
 func NewManager(dir string) (*Manager, error) {
@@ -47,7 +51,13 @@ func NewManager(dir string) (*Manager, error) {
 	}
 	sortedMusicList := types.NewMusicList(musicList)
 	sort.Sort(sortedMusicList)
-	return &Manager{baseDir: dir, musicList: musicList, sortedMusicList: sortedMusicList}, nil
+	return &Manager{
+		baseDir:         dir,
+		musicList:       musicList,
+		sortedMusicList: sortedMusicList,
+		inputChan:       make(chan string, 1),
+		runChan:         make(chan bool, 1),
+	}, nil
 }
 
 func (m *Manager) GetList(name string, page int, pagesize int) types.MusicList {
@@ -85,9 +95,68 @@ func (m *Manager) Play(id string, filename string) error {
 	if m.musicList[id] == nil {
 		return errors.NewMusicNotExistError(filename)
 	}
+	if m.playingMusic != nil {
+		if m.playingMusic == m.musicList[id] && m.playingMusic.Playing() {
+			return nil
+		}
+		if m.playingMusic != m.musicList[id] && m.playingMusic.Playing() {
+			err := m.playingMusic.Pause()
+			if err != nil {
+				return err
+			}
+		}
+	}
+	m.playingMusic = m.musicList[id]
 	err := m.musicList[id].Play()
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (m *Manager) Start() error {
+	list := m.GetList("", 0, 20)
+	m.PrintList(list)
+	go func() {
+		for {
+			select {
+			case input := <-m.inputChan:
+				cmd := strings.Split(input, " ")
+				switch cmd[0] {
+				case "play":
+					index, _ := strconv.Atoi(cmd[1])
+					music := list[index-1]
+					m.Play(music.Id(), music.Name())
+					m.runChan <- true
+				case "pause":
+					if m.playingMusic != nil {
+						m.playingMusic.Pause()
+					}
+					m.runChan <- true
+				case "quit":
+					if m.playingMusic != nil {
+						err := m.playingMusic.Pause()
+						if err != nil {
+							return
+						}
+					}
+					os.Exit(0)
+				}
+			}
+		}
+	}()
+	m.runChan <- true
+	for {
+		<-m.runChan
+		reader := bufio.NewReader(os.Stdin)
+
+		fmt.Print("请输入命令：")
+		input, _ := reader.ReadString('\n')
+
+		// 去除输入字符串中的换行符
+		input = strings.TrimSpace(input)
+
+		m.inputChan <- input
 	}
 	return nil
 }

@@ -8,7 +8,7 @@ import (
 )
 
 type wavPlayer struct {
-	basePlayer
+	*basePlayer
 }
 
 func init() {
@@ -17,7 +17,7 @@ func init() {
 
 func newWavPlayer(filepath string) interfaces.MediaInterface {
 	instance := &wavPlayer{
-		basePlayer: basePlayer{
+		basePlayer: &basePlayer{
 			filepath: filepath,
 		},
 	}
